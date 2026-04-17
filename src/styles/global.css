@@ -1,0 +1,310 @@
+:root {
+  --bg-0: #f6f9fc;
+  --bg-1: #eef3f8;
+  --bg-2: #e6edf5;
+  --ink-1: #1b2a41;
+  --ink-2: #3d5170;
+  --ink-3: #6b7c99;
+  --accent: #6aa9e9;
+  --accent-2: #7bd0c1;
+  --accent-3: #c4a7e7;
+  --coral: #f5a69b;
+  --cream: #fbf4e4;
+  --line: rgba(27, 42, 65, 0.08);
+  --shadow: 0 10px 40px rgba(30, 55, 90, 0.08);
+  --shadow-sm: 0 4px 16px rgba(30, 55, 90, 0.06);
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  background: radial-gradient(
+      1200px 600px at 10% -10%,
+      #eaf3ff 0%,
+      transparent 60%
+    ),
+    radial-gradient(900px 500px at 110% 10%, #e8f7f2 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#app {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100%;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 0 4px rgba(106, 169, 233, 0.18);
+}
+
+.app-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--ink-1);
+}
+
+.subtitle {
+  margin-left: 22px;
+  font-size: 13px;
+  color: var(--ink-3);
+  letter-spacing: 0.4px;
+}
+
+.stage-wrapper {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbfe 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.chapter-indicator {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.chapter-indicator .chapter-index {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.chapter-indicator .chapter-title {
+  color: var(--ink-1);
+  font-weight: 500;
+}
+
+.stage-container {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+}
+
+.stage-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.captions {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  max-width: 78%;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink-1);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.captions.visible {
+  opacity: 1;
+}
+
+.chapter-nav {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.chapter-nav .chapter-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink-2);
+  transition: transform 0.15s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease, background 0.2s ease;
+  font-family: inherit;
+}
+
+.chapter-nav .chapter-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(106, 169, 233, 0.55);
+  box-shadow: var(--shadow-sm);
+}
+
+.chapter-nav .chapter-chip.active {
+  background: linear-gradient(
+    135deg,
+    rgba(106, 169, 233, 0.16),
+    rgba(123, 208, 193, 0.18)
+  );
+  border-color: rgba(106, 169, 233, 0.55);
+  color: var(--ink-1);
+}
+
+.chapter-nav .chip-index {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.chapter-nav .chip-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: inherit;
+  line-height: 1.35;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.controls button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--ink-1);
+  font-family: inherit;
+  font-size: 13.5px;
+  letter-spacing: 0.5px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease,
+    background 0.2s ease, color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls button:hover:not(:disabled) {
+  border-color: rgba(106, 169, 233, 0.6);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.controls button.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(106, 169, 233, 0.35);
+}
+
+.controls button.primary:hover:not(:disabled) {
+  color: #ffffff;
+  filter: brightness(1.04);
+}
+
+.controls .progress {
+  flex: 1;
+  max-width: 340px;
+  height: 4px;
+  background: rgba(27, 42, 65, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.controls .progress > span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.15s linear;
+}
+
+.app-footer {
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding-top: 4px;
+}
+
+@media (max-width: 960px) {
+  #app {
+    padding: 18px;
+  }
+  .chapter-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .controls {
+    gap: 8px;
+  }
+  .captions {
+    max-width: 92%;
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+}

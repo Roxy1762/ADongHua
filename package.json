@@ -1,0 +1,20 @@
+{
+  "name": "immune-response-animation",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "特异性免疫过程动态演示 - 高中生物教学动画",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "pixi.js": "^7.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}
