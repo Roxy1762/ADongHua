@@ -48,10 +48,11 @@ body {
   padding: 28px 32px 40px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   min-height: 100%;
 }
 
+/* ── Header ── */
 .app-header {
   display: flex;
   flex-direction: column;
@@ -67,6 +68,7 @@ body {
 .brand-dot {
   width: 10px;
   height: 10px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   box-shadow: 0 0 0 4px rgba(106, 169, 233, 0.18);
@@ -86,26 +88,15 @@ body {
   letter-spacing: 0.4px;
 }
 
-.stage-wrapper {
-  position: relative;
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbfe 100%);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
+/* ── Chapter indicator (in normal flow, above canvas) ── */
 .chapter-indicator {
-  position: absolute;
-  top: 18px;
-  left: 22px;
-  z-index: 10;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.75);
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
-  padding: 8px 14px;
+  padding: 7px 16px;
   border-radius: 999px;
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
@@ -124,10 +115,20 @@ body {
   font-weight: 500;
 }
 
+/* ── Stage ── */
+.stage-wrapper {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbfe 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
 .stage-container {
   width: 100%;
   aspect-ratio: 16 / 9;
-  position: relative;
+  display: block;
 }
 
 .stage-container canvas {
@@ -136,13 +137,13 @@ body {
   height: 100% !important;
 }
 
+/* ── Captions (in normal flow, below canvas) ── */
 .captions {
-  position: absolute;
-  left: 50%;
-  bottom: 26px;
-  transform: translateX(-50%);
-  max-width: 78%;
-  padding: 12px 20px;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 20px;
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(12px);
   border: 1px solid var(--line);
@@ -161,6 +162,7 @@ body {
   opacity: 1;
 }
 
+/* ── Chapter nav ── */
 .chapter-nav {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -213,6 +215,7 @@ body {
   line-height: 1.35;
 }
 
+/* ── Controls ── */
 .controls {
   display: flex;
   align-items: center;
@@ -242,6 +245,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .controls button:hover:not(:disabled) {
@@ -269,6 +273,7 @@ body {
 
 .controls .progress {
   flex: 1;
+  min-width: 80px;
   max-width: 340px;
   height: 4px;
   background: rgba(27, 42, 65, 0.08);
@@ -284,6 +289,7 @@ body {
   transition: width 0.15s linear;
 }
 
+/* ── Footer ── */
 .app-footer {
   text-align: center;
   color: var(--ink-3);
@@ -292,19 +298,185 @@ body {
   padding-top: 4px;
 }
 
+/* ══════════════════════════════════════════
+   响应式断点
+   ══════════════════════════════════════════ */
+
+/* 大平板横屏 (≤ 1200px) */
+@media (max-width: 1200px) {
+  #app {
+    padding: 22px 24px 32px;
+    gap: 12px;
+  }
+  .app-header h1 {
+    font-size: 20px;
+  }
+  .chapter-nav .chip-title {
+    font-size: 13px;
+  }
+}
+
+/* 平板竖屏 / 小笔记本 (≤ 960px) */
 @media (max-width: 960px) {
   #app {
-    padding: 18px;
+    padding: 18px 18px 28px;
+    gap: 11px;
+  }
+  .app-header h1 {
+    font-size: 18px;
+  }
+  .subtitle {
+    font-size: 12px;
   }
   .chapter-nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .chapter-nav .chapter-chip {
+    padding: 10px 12px;
+  }
+  .chapter-nav .chip-title {
+    font-size: 12.5px;
   }
   .controls {
     gap: 8px;
+    padding: 11px 14px;
+  }
+  .controls button {
+    font-size: 13px;
+    padding: 8px 14px;
   }
   .captions {
-    max-width: 92%;
+    font-size: 13.5px;
+    padding: 10px 16px;
+    min-height: 52px;
+  }
+}
+
+/* 小平板 / 大手机横屏 (≤ 768px) */
+@media (max-width: 768px) {
+  #app {
+    padding: 14px 14px 22px;
+    gap: 10px;
+  }
+  .app-header h1 {
+    font-size: 16px;
+  }
+  .subtitle {
+    font-size: 11.5px;
+    margin-left: 16px;
+  }
+  .chapter-indicator {
+    font-size: 12px;
+    padding: 6px 12px;
+    gap: 8px;
+  }
+  .chapter-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .chapter-nav .chapter-chip {
+    padding: 9px 10px;
+  }
+  .chapter-nav .chip-index {
+    font-size: 10px;
+  }
+  .chapter-nav .chip-title {
+    font-size: 12px;
+  }
+  .controls {
+    gap: 6px;
+    padding: 10px 12px;
+  }
+  .controls button {
+    font-size: 12.5px;
+    padding: 7px 12px;
+  }
+  .controls .progress {
+    max-width: 200px;
+  }
+  .captions {
     font-size: 13px;
-    padding: 10px 14px;
+    padding: 9px 14px;
+    min-height: 48px;
+  }
+}
+
+/* 手机横屏 / 小手机 (≤ 600px) */
+@media (max-width: 600px) {
+  #app {
+    padding: 12px 12px 20px;
+    gap: 9px;
+  }
+  .app-header h1 {
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+  .subtitle {
+    display: none;
+  }
+  .chapter-indicator {
+    font-size: 11.5px;
+    padding: 5px 10px;
+  }
+  .chapter-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .chapter-nav .chapter-chip {
+    padding: 8px 10px;
+  }
+  .chapter-nav .chip-title {
+    font-size: 11.5px;
+  }
+  .controls {
+    gap: 5px;
+    padding: 8px 10px;
+  }
+  .controls button {
+    font-size: 12px;
+    padding: 7px 10px;
+  }
+  .controls .progress {
+    min-width: 60px;
+    max-width: 140px;
+  }
+  .captions {
+    font-size: 12.5px;
+    padding: 8px 12px;
+    min-height: 44px;
+    line-height: 1.6;
+  }
+  .app-footer {
+    font-size: 11px;
+  }
+}
+
+/* 手机竖屏 (≤ 480px) */
+@media (max-width: 480px) {
+  #app {
+    padding: 10px 10px 16px;
+    gap: 8px;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+  }
+  .app-header h1 {
+    font-size: 14px;
+  }
+  .chapter-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .controls button {
+    padding: 6px 9px;
+    font-size: 11.5px;
+  }
+  .controls .progress {
+    max-width: 100px;
+  }
+  .captions {
+    font-size: 12px;
+    min-height: 40px;
   }
 }
