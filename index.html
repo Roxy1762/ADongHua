@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="特异性免疫过程动态演示：抗原侵入体内后引发体液免疫与细胞免疫的全过程" />
+    <title>特异性免疫过程动态演示</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <h1>特异性免疫过程动态演示</h1>
+        </div>
+        <p class="subtitle">体液免疫 · 细胞免疫 · 协同维持机体内环境稳态</p>
+      </header>
+
+      <main class="stage-wrapper">
+        <div id="chapter-indicator" class="chapter-indicator">
+          <span class="chapter-index">第 1 章</span>
+          <span class="chapter-title">病原体入侵与抗原识别</span>
+        </div>
+        <div id="stage-container" class="stage-container"></div>
+        <div id="captions" class="captions" aria-live="polite"></div>
+      </main>
+
+      <nav id="chapter-nav" class="chapter-nav" aria-label="章节导航"></nav>
+
+      <div id="controls" class="controls"></div>
+
+      <footer class="app-footer">
+        <span>人教版《稳态与调节》第 4 章 · 免疫调节 · 特异性免疫</span>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
