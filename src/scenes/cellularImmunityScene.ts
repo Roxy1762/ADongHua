@@ -2,7 +2,7 @@ import { Container, Graphics } from 'pixi.js';
 import gsap from 'gsap';
 import type { Scene, SceneContext, ChapterInfo } from '../core/types';
 import { PALETTE, NARRATION } from '../core/palette';
-import { makeChapterTitle, makeTagWithPin } from '../entities/labels';
+import { makeChapterTitle, makeTag, makeTagWithPin } from '../entities/labels';
 import { createInfectedCell } from '../entities/infectedCell';
 import { createKillerTCell } from '../entities/killerTCell';
 import { createHelperTCell } from '../entities/helperTCell';
@@ -47,13 +47,13 @@ export class CellularImmunityScene implements Scene {
     targetTag.alpha = 0;
     this.root.addChild(targetTag);
 
-    // 病毒进入靶细胞的示意（先落到目标上方并"钻入"）
+    // 病毒
     const virus = createVirus({ radius: 18 });
     virus.position.set(width * 0.15, height * 0.28);
     virus.alpha = 0;
     this.root.addChild(virus);
 
-    // 辅助性 T 细胞（释放细胞因子协调）
+    // 辅助性 T 细胞
     const helperT = createHelperTCell(42);
     helperT.position.set(width * 0.5, height * 0.2);
     helperT.alpha = 0;
@@ -63,19 +63,25 @@ export class CellularImmunityScene implements Scene {
     helperTag.alpha = 0;
     this.root.addChild(helperTag);
 
-    // 细胞毒性 T 细胞（从右侧进入）
-    const killer = createKillerTCell(44);
-    killer.position.set(width * 0.88, height * 0.55);
-    killer.alpha = 0;
-    this.root.addChild(killer);
-    this.disposers.push(() => membranePulse(killer, 0.025, 3).kill());
+    // 两个细胞毒性 T 细胞（体现克隆扩增后的多个效应细胞）
+    const killer1 = createKillerTCell(44);
+    killer1.position.set(width * 0.84, height * 0.47);
+    killer1.alpha = 0;
+    this.root.addChild(killer1);
+    this.disposers.push(() => membranePulse(killer1, 0.025, 3).kill());
 
-    const killerTag = makeTagWithPin('细胞毒性 T 细胞', 0);
-    killerTag.position.set(width * 0.88, height * 0.55 + 80);
+    const killer2 = createKillerTCell(37);
+    killer2.position.set(width * 0.88, height * 0.62);
+    killer2.alpha = 0;
+    this.root.addChild(killer2);
+    this.disposers.push(() => membranePulse(killer2, 0.02, 3.3).kill());
+
+    const killerTag = makeTagWithPin('细胞毒性 T 细胞（CTL）', 0);
+    killerTag.position.set(width * 0.86, height * 0.56 + 76);
     killerTag.alpha = 0;
     this.root.addChild(killerTag);
 
-    // 末尾的巨噬细胞 & 记忆 T 细胞
+    // 记忆 T 细胞
     const memoryT = createMemoryCell('T', 38);
     memoryT.position.set(width * 0.72, height * 0.25);
     memoryT.alpha = 0;
@@ -86,17 +92,18 @@ export class CellularImmunityScene implements Scene {
     memoryTag.alpha = 0;
     this.root.addChild(memoryTag);
 
+    // 巨噬细胞
     const macro = createMacrophage(58);
-    macro.position.set(width * 0.3, height * 0.86);
+    macro.position.set(width * 0.3, height * 0.84);
     macro.alpha = 0;
     macro.scale.set(0.85);
     this.root.addChild(macro);
     const macroTag = makeTagWithPin('巨噬细胞 · 吞噬清除', 0);
-    macroTag.position.set(width * 0.3, height * 0.86 + 84);
+    macroTag.position.set(width * 0.3, height * 0.84 + 84);
     macroTag.alpha = 0;
     this.root.addChild(macroTag);
 
-    // 目标表面呈递抗原的"小片段"（一开始空，细胞被感染后才出现）
+    // 靶细胞表面 MHC-Ⅰ 呈递抗原肽段
     const surfaceAntigens: Graphics[] = [];
     for (let i = 0; i < 6; i++) {
       const g = new Graphics();
@@ -116,7 +123,27 @@ export class CellularImmunityScene implements Scene {
       surfaceAntigens.push(g);
     }
 
-    // 时间轴
+    // MHC-Ⅰ 标注（感染后才显示）
+    const mhcLabel = makeTag('MHC-Ⅰ 分子呈递抗原肽段', {
+      color: PALETTE.infectedCell,
+      textColor: PALETTE.infectedCellCore,
+      fontSize: 13
+    });
+    mhcLabel.position.set(target.position.x - 128, target.position.y - 96);
+    mhcLabel.alpha = 0;
+    this.root.addChild(mhcLabel);
+
+    // 穿孔素/颗粒酶标注（CTL 与靶细胞接触时显示）
+    const perforinLabel = makeTag('穿孔素 / 颗粒酶', {
+      color: 0xebf0ff,
+      textColor: PALETTE.killerTCore,
+      fontSize: 13
+    });
+    perforinLabel.position.set(target.position.x + 90, target.position.y - 80);
+    perforinLabel.alpha = 0;
+    this.root.addChild(perforinLabel);
+
+    // ════════════════ 时间轴 ════════════════
     tl.to(this.root, { alpha: 1, duration: 0.6 });
     tl.to(title, { alpha: 1, duration: 0.6 }, '<');
     tl.call(() => ctx.setCaption(NARRATION.cellular));
@@ -136,11 +163,12 @@ export class CellularImmunityScene implements Scene {
     tl.to(virus.scale, { x: 0.4, y: 0.4, duration: 0.8, ease: EASE.softIn }, '-=0.6');
     tl.to(virus, { alpha: 0, duration: 0.6 }, '-=0.4');
 
-    // 靶细胞膜表面出现抗原（被感染的证据）
+    // 靶细胞膜出现 MHC-Ⅰ 呈递的抗原肽
     tl.to(surfaceAntigens, { alpha: 1, duration: 0.5, stagger: 0.08 });
     tl.add(highlightPulse(target, 1, 0.6), '-=0.3');
+    tl.to(mhcLabel, { alpha: 1, duration: 0.4 }, '-=0.2');
 
-    // 辅助性 T 登场并释放细胞因子促进细胞毒性 T 激活
+    // 辅助性 T 细胞登场，释放细胞因子激活 CTL
     tl.to(helperT, { alpha: 1, duration: 0.5 }, '+=0.2');
     tl.to(helperTag, { alpha: 1, duration: 0.5 }, '<');
     for (let i = 0; i < 5; i++) {
@@ -150,34 +178,40 @@ export class CellularImmunityScene implements Scene {
       this.root.addChild(ck);
       tl.to(ck, { alpha: 0.95, duration: 0.25 }, i === 0 ? '-=0.1' : '<');
       tl.to(ck.position, {
-        x: killer.position.x - 16 + ((i % 3) - 1) * 10,
-        y: killer.position.y - 8,
+        x: killer1.position.x - 16 + ((i % 3) - 1) * 10,
+        y: killer1.position.y - 8,
         duration: 1.1,
         ease: EASE.softInOut
       }, '<');
       tl.to(ck, { alpha: 0, duration: 0.35 }, '-=0.3');
     }
 
-    // 细胞毒性 T 登场，靠近并接触靶细胞
-    tl.to(killer, { alpha: 1, duration: 0.5 }, '-=0.6');
-    tl.to(killerTag, { alpha: 1, duration: 0.5 }, '<');
-    tl.add(highlightPulse(killer, 1, 0.5));
+    // 两个 CTL 登场
+    tl.to([killer1, killer2], { alpha: 1, duration: 0.4, stagger: 0.14 }, '-=0.6');
+    tl.to(killerTag, { alpha: 1, duration: 0.4 }, '<');
+    tl.add(highlightPulse(killer1, 1, 0.5));
     tl.call(() => ctx.setCaption(NARRATION.cellularKilling));
 
-    tl.to(killer.position, {
-      x: target.position.x + 78,
-      y: target.position.y + 6,
-      duration: 1.6,
+    // killer1 靠近靶细胞
+    tl.to(killer1.position, {
+      x: target.position.x + 80,
+      y: target.position.y,
+      duration: 1.4,
       ease: EASE.softInOut
     });
     tl.to(killerTag.position, {
-      x: target.position.x + 78,
-      y: target.position.y + 6 + 80,
-      duration: 1.6,
+      x: target.position.x + 80,
+      y: target.position.y + 80,
+      duration: 1.4,
       ease: EASE.softInOut
     }, '<');
+    tl.to(mhcLabel, { alpha: 0, duration: 0.3 }, '<');
 
-    // 接触 & 裂解：靶细胞碎裂（缩放减 + 透明度降 + 外圈破裂环）
+    // 接触后释放穿孔素/颗粒酶
+    tl.to(perforinLabel, { alpha: 1, duration: 0.4 });
+    tl.to(perforinLabel, { alpha: 0, duration: 0.3 }, '+=0.7');
+
+    // 靶细胞裂解（凋亡）
     const crack = new Graphics();
     crack.lineStyle(2, PALETTE.infectedCellCore, 0.8);
     crack.drawCircle(target.position.x, target.position.y, 74);
@@ -187,11 +221,11 @@ export class CellularImmunityScene implements Scene {
     tl.to(crack.scale, { x: 1.25, y: 1.25, duration: 1.0, ease: EASE.softInOut }, '<');
     tl.to(crack, { alpha: 0, duration: 0.6 }, '-=0.3');
 
-    tl.to(target.scale, { x: 0.85, y: 0.85, duration: 0.8, ease: EASE.softIn }, '-=1.0');
-    tl.to(target, { alpha: 0.4, duration: 0.8, ease: EASE.softIn }, '<');
-    tl.to(surfaceAntigens, { alpha: 0.2, duration: 0.6 }, '<');
+    tl.to(target.scale, { x: 0.84, y: 0.84, duration: 0.8, ease: EASE.softIn }, '-=1.0');
+    tl.to(target, { alpha: 0.38, duration: 0.8, ease: EASE.softIn }, '<');
+    tl.to(surfaceAntigens, { alpha: 0.15, duration: 0.6 }, '<');
 
-    // 病原体暴露，可被巨噬细胞清除
+    // 巨噬细胞清除残体
     tl.to(macro, { alpha: 1, duration: 0.5 }, '+=0.1');
     tl.to(macroTag, { alpha: 1, duration: 0.5 }, '<');
     tl.to(macro.scale, { x: 1, y: 1, duration: 0.6, ease: EASE.pop }, '<');
